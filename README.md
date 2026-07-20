@@ -38,7 +38,7 @@ This matters because it removes the two biggest failure modes of spreadsheet-bas
 
 Five tables, related through a proper star-schema structure in Power Pivot — not a flat sheet with VLOOKUPs:
 
-`[https://github.com/areejfathy17/Construction-Workforce-Project-Cost-Analytics-System/blob/main/power-pivot-data-model.png]`
+[https://github.com/areejfathy17/Construction-Workforce-Project-Cost-Analytics-System/blob/main/power-pivot-data-model.png]
 
 | Table | Role | Key Relationship |
 |---|---|---|
@@ -180,21 +180,21 @@ Three dashboards, one model — each answering a different question for a differ
 
 **HR Analytics** — workforce composition: headcount, grade distribution, employment status, department and job-title breakdown, salary bands by role.
 
-`[https://github.com/areejfathy17/Construction-Workforce-Project-Cost-Analytics-System/blob/main/HR_Dashboard.png]`
+[https://github.com/areejfathy17/Construction-Workforce-Project-Cost-Analytics-System/blob/main/HR_Dashboard.png]
 
 **Payroll Analysis** — net salary, salary range, month-over-month trend (via `Previous Month Salary` / `Difference`), top earners, department-level salary distribution, disbursement channel split.
 
-`[https://github.com/areejfathy17/Construction-Workforce-Project-Cost-Analytics-System/blob/main/Payroll%20Analysis%20Dashboard.png]`
+[https://github.com/areejfathy17/Construction-Workforce-Project-Cost-Analytics-System/blob/main/Payroll%20Analysis%20Dashboard.png]
 
 **Project Cost Analysis** — total project cost, workforce assigned, work days and OT hours, cost broken down by project and by department simultaneously — the direct output of the `Project Cost` and `Cost per Worker` measures.
 
-`[https://github.com/areejfathy17/Construction-Workforce-Project-Cost-Analytics-System/blob/main/Project_Cost_Dashboard%20.png]`
+[https://github.com/areejfathy17/Construction-Workforce-Project-Cost-Analytics-System/blob/main/Project_Cost_Dashboard%20.png]
 
 **Data entry & validation layer** — shown as supporting evidence of the controlled-entry architecture (Section 3), not as standalone reporting:
 
-`[https://github.com/areejfathy17/Construction-Workforce-Project-Cost-Analytics-System/blob/main/employee-master-data-entry.png]`
-`[https://github.com/areejfathy17/Construction-Workforce-Project-Cost-Analytics-System/blob/main/daily-work-tracking.png]`
-`[https://github.com/areejfathy17/Construction-Workforce-Project-Cost-Analytics-System/blob/main/payroll-transactions-entry.png]`
+[https://github.com/areejfathy17/Construction-Workforce-Project-Cost-Analytics-System/blob/main/employee-master-data-entry.png]
+[https://github.com/areejfathy17/Construction-Workforce-Project-Cost-Analytics-System/blob/main/daily-work-tracking.png]
+[https://github.com/areejfathy17/Construction-Workforce-Project-Cost-Analytics-System/blob/main/payroll-transactions-entry.png]
 
 ## 8. Technical Highlights
 
