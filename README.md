@@ -1,105 +1,225 @@
 # Construction Workforce & Project Cost Analytics System
 
-**An automated labor-cost engine that converts daily attendance into real-time project costing, departmental payroll, and workforce analytics — built entirely on Excel + Power Pivot + DAX.**
+**A relational payroll and project-costing engine for a multi-department construction contractor — built on Excel, Power Pivot, and DAX to turn daily attendance into automated payroll, project cost, and workforce intelligence.**
 
 ---
 
-## 1. The Business Problem
+## 1. Business Problem
 
-A multi-department construction contractor (Construction, Finishes, Electrical, Plumbing, Stone, Aluminum, Equipment, Carpentry, Paints, Administration) needed to answer three questions every month that were previously handled through disconnected spreadsheets:
+A construction contractor operating across ten departments — Construction, Finishes, Electrical, Plumbing, Stone, Aluminum, Equipment, Carpentry, Paints, and Administration — needed to answer three interlocked questions every pay cycle:
 
-1. **What did each project actually cost in labor** — including overtime — this month?
-2. **What does each department owe in payroll**, once bonuses, loans, and deductions are applied?
-3. **Is the workforce compliant and stable** — sponsorship status, residency validity, absence patterns, headcount by grade and nationality?
+- What did each **project** actually cost in labor, including overtime, this period?
+- What does each **department** owe in payroll once bonuses, loans, and deductions are applied?
+- Is the **workforce** stable and compliant — attendance, headcount, absence patterns, cost per worker?
 
-The challenge wasn't the math — it was that all three answers had to come from **the same source of truth**, updated daily, without manual re-entry at month-end.
+These weren't three separate reporting problems. They were one problem viewed from three angles, and the existing process answered them with disconnected spreadsheets rebuilt by hand every month — a process that doesn't scale and doesn't reconcile.
 
-## 2. The Solution
+## 2. Solution Overview
 
-A relational data model where a single daily attendance record simultaneously drives **project costing** and **departmental payroll** — with a DAX layer computing cost, and three purpose-built dashboards consuming one model.
+A single relational data model where **one daily attendance record simultaneously drives project costing and departmental payroll**, with a DAX calculation layer computing cost and salary automatically, and three purpose-built dashboards reading from that one model.
 
 ```
-Departments → Projects → Employees → Daily Work Logs → Payroll Transactions → Cost & Salary Engine → Dashboards
+Departments → Projects → Employees → Daily Work Logs → Payroll Transactions → Salary & Cost Engine → Executive Dashboards
 ```
 
-The **Daily Work Log** is the operational core: every row (employee × project × day) carries hours worked, overtime hours, and attendance status, and DAX measures convert that into Normal Cost and OT Cost — which then roll up two ways at once: to the **project** it was worked on, and to the **department** the employee belongs to.
+The **Daily Work log is the operational core** of the system. Every record — employee, project, work days, work hours, OT hours, attendance status — feeds forward into payroll, overtime cost, department expense, and project labor cost, with no duplicate entry and no manual reconciliation between the three views.
 
-## 3. Why This Is More Than a Payroll Sheet
+## 3. Architecture
 
-| Feature | Why it matters |
-|---|---|
-| **Star-schema data model in Power Pivot** | Five related tables (Master_Employee, tbl_Dept, tbl_Projects, Daily_Work, tbl_Transactions) with proper 1-to-many relationships — not a single flat sheet with VLOOKUPs. |
-| **Dual-path cost allocation** | One attendance record feeds both project costing and department payroll without duplicate entry. |
-| **Multi-channel payroll disbursement** | Employees are paid via Bank, Cash, or Mobile Wallet — the model reconciles total payroll cost across all three, reflecting real disbursement complexity on a labor-intensive site. |
-| **Compliance monitoring built into the employee master** | Residency/permit expiry is tracked with a countdown and conditional-formatting alert, alongside a multi-nationality workforce breakdown — the kind of operational risk tracking that's easy to skip and expensive to ignore. |
-| **Bilingual architecture (Arabic / English)** | Every table, label, and dashboard is dual-language by design, not translated after the fact — built for a bilingual operations team. |
-| **Three dashboards, one model** | HR Analytics, Payroll Analysis, and Project Cost Analysis are independent views over a single reusable data model, not three separate builds. |
+The system is not a manual spreadsheet — it's a controlled data-entry architecture sitting on top of a relational model:
+
+- **Master data tables** (Employees, Departments, Projects) are the single source of truth for every lookup used downstream.
+- **Validation lists and controlled dropdowns** restrict entry for Departments, Projects, Transaction Types, Payment Methods, and Employee Status — an operator selects an employee ID and every related field (name, department, pay rate, project) populates automatically.
+- **Hidden reference tables** back the dropdowns without cluttering the entry sheets.
+
+This matters because it removes the two biggest failure modes of spreadsheet-based systems: inconsistent free-text entry and broken lookups — the model self-corrects at the point of entry instead of during reporting.
 
 ## 4. Data Model
 
-The core of the system — five tables connected through a proper relational structure in Power Pivot:
+Five tables, related through a proper star-schema structure in Power Pivot — not a flat sheet with VLOOKUPs:
 
 `[Screenshot: Power Pivot Diagram View — assets/screenshots/01_data_model.png]`
 
-- **Master_Employee** *(dimension)* — one row per employee: pay rates, salary components, job title, nationality, compliance dates, department.
-- **tbl_Dept** *(dimension)* — department reference table, bilingual, with department codes used across all fact tables.
-- **tbl_Projects** *(dimension)* — project reference table: client, location, timeline, status.
-- **Daily_Work** *(fact table)* — the operational core: daily hours, overtime, attendance status, linked to both employee and project.
-- **tbl_Transactions** *(fact table)* — bonuses, loans, and deductions, linked to employee.
+| Table | Role | Key Relationship |
+|---|---|---|
+| `Master_Employee` | Employee dimension — pay rates, salary components, compliance data | `1 → *` to `Daily_Work`, `1 → *` to `tbl_Transactions` |
+| `tbl_Dept` | Department dimension | `1 → *` to `Master_Employee` |
+| `tbl_Projects` | Project dimension — client, location, timeline, status | `1 → *` to `Daily_Work` |
+| `Daily_Work` | **Fact table** — the operational core: attendance, hours, OT, status | Many-to-one to `Master_Employee` and `tbl_Projects` |
+| `tbl_Transactions` | **Fact table** — bonuses, loans, deductions, additions | Many-to-one to `Master_Employee` |
 
-Relationships: `Master_Employee (1) → Daily_Work (*)`, `tbl_Dept (1) → Daily_Work (*)`, `tbl_Projects (1) → Daily_Work (*)`, `Master_Employee (1) → tbl_Transactions (*)`.
+Two fact tables sharing the same employee dimension is what allows payroll (via `tbl_Transactions`) and project cost (via `Daily_Work`) to stay reconciled without ever touching each other directly.
 
-## 5. Dashboards
+## 5. Core Modules
 
-### HR Analytics
-Workforce composition at a glance — headcount, grade distribution, employment status, sponsorship status, department and job-title breakdowns, and salary bands by role.
+1. **Employee Master Database** — rates, salary structure, job title, nationality, compliance/residency status
+2. **Department Master Database** — bilingual department reference, coded IDs
+3. **Project Master Database** — client, location, timeline, status
+4. **Daily Work Tracking System** — the attendance and hours engine driving all downstream cost
+5. **Payroll Transactions System** — bonuses, loans, deductions, additions per employee
+6. **Power Pivot Data Model** — the relational layer connecting all of the above
+7. **DAX Calculation Engine** — 20+ measures computing salary, cost, and workforce KPIs in real time
+8. **Executive Dashboards** — HR, Payroll, and Project Cost views over the single model
+
+## 6. DAX Showcase
+
+The measures below are the actual calculation logic behind the system, grouped by function.
+
+**Payroll Engine**
+
+```DAX
+Net Salary =
+[Total Work Cost]
++ [Total Bonus]
++ [Total Addition]
+- [Total Deductions]
+- [Total Loans]
+```
+
+```DAX
+Avg Salary =
+AVERAGEX(
+    FILTER(
+        VALUES(Master_Employee[Emp_ID]),
+        [Net Salary] > 0
+    ),
+    [Net Salary]
+)
+```
+
+```DAX
+Max Salary =
+MAXX(VALUES(Master_Employee[Emp_ID]), [Net Salary])
+```
+
+```DAX
+Min Salary =
+MINX(
+    FILTER(VALUES(Master_Employee[Emp_ID]), [Net Salary] > 0),
+    [Net Salary]
+)
+```
+
+`Net Salary` is the assembly point of the whole engine — it pulls together work-based cost and every transaction type into one figure, computed per employee, per period, on the fly.
+
+**Project & Cost Engine**
+
+```DAX
+Project Cost =
+SUMX(
+    Daily_Work,
+    Daily_Work[Days_Work] * RELATED(Master_Employee[Daily_Rate])
+    + Daily_Work[OT_Hrs] * RELATED(Master_Employee[OT_Hr_Rate])
+)
+```
+
+```DAX
+OT Cost =
+SUMX(
+    Daily_Work,
+    Daily_Work[OT_Hrs] * RELATED(Master_Employee[OT_Hr_Rate])
+)
+```
+
+```DAX
+Total Work Cost = [Normal Cost] + [OT Cost]
+```
+
+```DAX
+Cost per Worker = DIVIDE([Project Cost], [Workers Count])
+```
+
+`Project Cost` is the measure doing the real work: it iterates every attendance row and pulls each employee's individual daily and overtime rate via `RELATED`, meaning cost is computed at the person-day level, not a department-wide average. This is what lets the same fact table answer both "what did this project cost" and "what does this department owe."
+
+**Workforce Analytics**
+
+```DAX
+Employee Count = DISTINCTCOUNT(Master_Employee[Emp_ID])
+Workers Count = DISTINCTCOUNT(Daily_Work[Emp_ID])
+
+Absent Days =
+CALCULATE(COUNTROWS(Daily_Work), Daily_Work[Emp_Status] = "Absent")
+
+Absence Rate =
+DIVIDE(SUM(Daily_Work[Status_Code]), COUNTROWS(Daily_Work))
+
+Total Work Days = SUM(Daily_Work[Days_Work])
+Total OT Hours = SUM(Daily_Work[OT_Hrs])
+```
+
+**Payroll Transactions**
+
+```DAX
+Total Bonus =
+CALCULATE(SUM(tbl_Transactions[Amount]), tbl_Transactions[Type_Code] = "Bo_01")
+
+Total Loans =
+CALCULATE(SUM(tbl_Transactions[Amount]), tbl_Transactions[Type_Code] = "Lo_01")
+
+Total Deductions =
+CALCULATE(SUM(tbl_Transactions[Amount]), tbl_Transactions[Type_Code] = "De_01")
+
+Total Addition =
+CALCULATE(SUM(tbl_Transactions[Amount]), tbl_Transactions[Type_Code] = "Ad_01")
+```
+
+**Trend Analysis**
+
+```DAX
+Previous Month Salary =
+CALCULATE([Net Salary], DATEADD(Daily_Work[Month], -1, MONTH))
+
+Difference = [Selected Month Salary] - [Previous Month Salary]
+```
+
+`DATEADD` over the attendance calendar gives month-over-month payroll trend without a separate date table maintained by hand — the model's own Month column drives the time intelligence.
+
+## 7. Dashboard Gallery
+
+Three dashboards, one model — each answering a different question for a different audience.
+
+**HR Analytics** — workforce composition: headcount, grade distribution, employment status, department and job-title breakdown, salary bands by role.
 
 `[Screenshot: assets/screenshots/02_hr_dashboard.png]`
 
-### Payroll Analysis
-Net salary, salary range and average, month-over-month payroll trend, top earners, department-level salary distribution, and disbursement split across Bank / Cash / Mobile Wallet.
+**Payroll Analysis** — net salary, salary range, month-over-month trend (via `Previous Month Salary` / `Difference`), top earners, department-level salary distribution, disbursement channel split.
 
 `[Screenshot: assets/screenshots/03_payroll_analysis.png]`
 
-### Project Cost Analysis
-Total project cost, workforce assigned per project, work days and OT hours, and a full cost breakdown by project **and** by department — the direct output of the daily-work cost engine.
+**Project Cost Analysis** — total project cost, workforce assigned, work days and OT hours, cost broken down by project and by department simultaneously — the direct output of the `Project Cost` and `Cost per Worker` measures.
 
 `[Screenshot: assets/screenshots/04_project_cost_dashboard.png]`
 
-## 6. Key DAX Measures
+**Data entry & validation layer** — shown as supporting evidence of the controlled-entry architecture (Section 3), not as standalone reporting:
 
-The measures below sit on top of the data model and are what convert raw attendance into decision-ready numbers. Grouped by what they answer:
+`[Screenshot: Employee Master — assets/screenshots/05_master_employee.png]`
+`[Screenshot: Daily Work Log — assets/screenshots/06_daily_work.png]`
+`[Screenshot: Payroll Transactions — assets/screenshots/07_payroll_transactions.png]`
 
-**Cost Engine**
-- `Net Salary` — final take-home pay after allowances, bonuses, loans, and deductions
-- `Project Cost` — total labor cost allocated to a project
-- `OT Cost` / `Total Work Cost` — overtime and combined labor cost
-- `Cost per Worker` — normalized cost for cross-project comparison
+## 8. Technical Highlights
 
-**Workforce Metrics**
-- `Workers Count` — active headcount by project/department/period
-- `Absence Rate` — attendance reliability by employee, project, or department
+- Relational star-schema model in Power Pivot — five related tables, not flat-sheet reporting
+- 20+ DAX measures spanning payroll calculation, cost allocation, workforce KPIs, and time intelligence
+- `RELATED()`-driven cost allocation at the person-day level, enabling accurate multi-dimensional rollups (project *and* department) from one fact table
+- `DATEADD` time intelligence over a native attendance calendar for month-over-month trend, with no manually maintained date table
+- Controlled data-entry architecture (validation lists, dropdowns, hidden reference tables) that prevents bad data at the source rather than cleaning it downstream
+- Three independent executive dashboards consuming a single reusable model
 
-**Payroll Trend Analysis**
-- `Avg Salary`, `Max Salary`, `Min Salary` — payroll distribution
-- `Previous Month Salary` / `Payroll Trends` — period-over-period comparison for cost control
+## 9. Challenges Solved
 
-*(Formula-level detail available in `docs/dax-measures.md` — populated with exact expressions on request.)*
+- **Cost duplication risk** — eliminated by allocating labor cost from a single fact table (`Daily_Work`) to both project and department views, rather than maintaining separate cost sheets that could drift out of sync.
+- **Payroll assembly complexity** — `Net Salary` had to combine work-based cost with four independent transaction types (bonus, addition, deduction, loan) without hardcoding transaction logic into the payroll sheet; solved by filtering `tbl_Transactions` by `Type_Code` inside dedicated measures.
+- **Manual month-end trend building** — replaced with `DATEADD`-based time intelligence, so month-over-month payroll comparison updates automatically as new attendance data is added.
+- **Data entry error risk** — solved architecturally, through validation lists and auto-populated lookups, rather than through downstream data cleaning.
 
-## 7. System Inputs (Data Entry Layer)
+## 10. Business Impact
 
-The dashboards are read-only outputs of a structured entry system. The two screens below represent the entry layer's design discipline — bilingual headers, coded IDs, filterable structure — rather than the full table set:
+- Project and departmental labor cost are available on demand, reconciled from the same source, instead of being rebuilt manually each cycle.
+- Payroll calculation — including overtime, bonuses, loans, and deductions — is automated end-to-end from attendance data.
+- Workforce risk (absence patterns, headcount shifts, cost per worker) is visible continuously rather than surfacing only at month-end.
+- The model is built to extend: adding a department, project, or transaction type requires a new row in a master table, not a rebuild of the reporting layer.
 
-`[Screenshot: Daily Work Log entry screen — assets/screenshots/05_daily_work_entry.png]`
-`[Screenshot: Master Employee record screen — assets/screenshots/06_master_employee_entry.png]`
-
-Departments, Projects, and Transactions use the same design pattern (coded IDs, bilingual labels, structured columns) and feed the same model — they're summarized in `docs/data-dictionary.md` rather than repeated here.
-
-## 8. Tech Stack
-
-`Excel` · `Power Pivot` · `DAX` · `Power Query (data prep)` · Relational data modeling · Bilingual (AR/EN) UI design
-
-## 9. Repository Structure
+## 11. Repository Structure
 
 ```
 Construction-Workforce-Cost-Analytics/
@@ -110,15 +230,16 @@ Construction-Workforce-Cost-Analytics/
 │       ├── 02_hr_dashboard.png
 │       ├── 03_payroll_analysis.png
 │       ├── 04_project_cost_dashboard.png
-│       ├── 05_daily_work_entry.png
-│       └── 06_master_employee_entry.png
+│       ├── 05_master_employee.png
+│       ├── 06_daily_work.png
+│       └── 07_payroll_transactions.png
 ├── docs/
-│   ├── data-dictionary.md      # table/field reference for all 5 tables
-│   ├── dax-measures.md         # full measure list with DAX expressions
+│   ├── data-dictionary.md      # field-level reference for all 5 tables
+│   ├── dax-measures.md         # full measure list, grouped, with descriptions
 │   └── business-logic.md       # cost allocation & payroll calculation rules
-└── HR_Labor_Cost_System.xlsx   # sanitized/sample workbook
+└── HR_Labor_Cost_System.xlsx   # sanitized workbook
 ```
 
-## 10. Notes on This Repository
+## 12. Notes on This Repository
 
-This project was built for a real operating context and has been sanitized for portfolio use — employee names, IDs, and figures shown in screenshots are illustrative. The data model, relationships, and DAX logic reflect the actual system design.
+This project reflects a real operating system built for a live business context, sanitized for portfolio use — names, IDs, and figures in the screenshots are illustrative; the data model, relationships, and DAX logic reflect the actual system design.
