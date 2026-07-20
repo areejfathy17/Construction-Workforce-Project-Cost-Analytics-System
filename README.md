@@ -12,7 +12,7 @@
 | Connected Tables | 5 |
 | DAX Measures | 20+ |
 | Executive Dashboards | 3 |
-| Business Functions | Workforce, Payroll, Project Costing |
+| Core Functions | Workforce, Payroll & Project Costing |
 | Platform | Excel + Power Pivot + DAX |
 
 ---
@@ -39,105 +39,42 @@
 
 # Data Model
 
-The solution is built on a centralized relational Power Pivot model that connects workforce, projects, attendance, payroll transactions, and cost calculations into a single source of truth.
+The solution is powered by a centralized Power Pivot data model that integrates employees, projects, attendance records, payroll transactions, and labor costs into a single source of truth.
 
 ![Power Pivot Data Model](power-pivot-data-model.png)
 
-### Core Tables
-
-| Table | Purpose |
-|---------|---------|
-| Master_Employee | Employee master records, salary structure, rates, job details |
-| tbl_Dept | Department hierarchy and reference data |
-| tbl_Projects | Project information, client, location, status |
-| Daily_Work | Attendance, working days, overtime hours |
-| tbl_Transactions | Bonuses, deductions, loans, additions |
-
-### Key Relationships
-
-```text
-Departments
-      │
-      ▼
-Master_Employee
-      │
-      ├──────────────► Transactions
-      │
-      ▼
-Daily_Work ◄──────── Projects
-```
-
-The **Daily_Work** table acts as the operational core of the system, driving both payroll calculations and project labor costing.
+The **Daily Work** table acts as the operational core of the system, driving both payroll calculations and project labor costing.
 
 ---
 
 # Business Problem
 
-The company managed employees, projects, attendance, overtime, payroll adjustments, and project costs through disconnected spreadsheets.
-
-This created challenges in:
-
-- Manual payroll calculations
-- Project cost estimation
-- Workforce performance monitoring
-- Tracking bonuses, deductions, and loans
-- Producing management reports across departments
+The company managed workforce operations, payroll adjustments, attendance records, and project labor costs through disconnected spreadsheets, making it difficult to accurately calculate salaries, track project expenses, and generate management reports.
 
 ---
 
-# Solution Overview
+# Solution
 
-I designed and developed a complete operational management system that integrates:
+Designed and developed a centralized operational system that connects:
 
 - Employee Management
-- Department Management
 - Project Management
-- Daily Workforce Tracking
+- Workforce Tracking
 - Payroll Processing
-- Labor Cost Allocation
+- Project Cost Allocation
 - Executive Reporting
 
-All modules are connected through a centralized Power Pivot model and automated DAX calculation engine.
+All modules are integrated through a relational Power Pivot model and an automated DAX calculation engine.
 
 ---
 
-# System Architecture
-
-```text
-Departments
-      ↓
-Projects
-      ↓
-Employees
-      ↓
-Daily Work Logs
-      ↓
-Payroll Transactions
-      ↓
-Salary & Cost Engine
-      ↓
-Executive Dashboards
-```
-
-The system was designed around controlled data-entry workflows rather than manual spreadsheet editing.
-
----
-
-# Data Entry & Automation Layer
+# Core Modules
 
 ## Employee Master
 
 ![Employee Master](employee-master-data-entry.png)
 
-Centralized employee database containing:
-
-- Employee information
-- Department assignment
-- Salary structure
-- Daily rates
-- OT rates
-- Job title
-- Employment status
+Centralized employee database powering payroll calculations, workforce analytics, and project cost allocation.
 
 ---
 
@@ -145,22 +82,7 @@ Centralized employee database containing:
 
 ![Daily Work](daily-work-tracking.png)
 
-The operational core of the system.
-
-Tracks:
-
-- Attendance
-- Work days
-- Work hours
-- Overtime hours
-- Project allocation
-
-Used to automatically calculate:
-
-- Employee salaries
-- Overtime payments
-- Project labor costs
-- Department expenses
+Operational core of the system used to calculate employee payroll, overtime costs, and project labor expenses.
 
 ---
 
@@ -168,14 +90,7 @@ Used to automatically calculate:
 
 ![Transactions](payroll-transactions-entry.png)
 
-Tracks:
-
-- Bonuses
-- Loans
-- Deductions
-- Additional payments
-
-All transactions automatically impact final payroll calculations.
+Tracks bonuses, deductions, loans, and additional payments that automatically affect payroll calculations.
 
 ---
 
@@ -249,53 +164,17 @@ CALCULATE(
 - Deduction Analysis
 
 ---
-
-# Technical Highlights
-
-- Relational Power Pivot Data Model
-- Workforce & Payroll Automation
-- Project Cost Allocation Engine
-- Advanced DAX Calculations
-- Dynamic KPI Reporting
-- Data Validation Architecture
-- Lookup-driven Data Entry
-- Multi-Dashboard Reporting
-- Time Intelligence Analysis
-
----
-
-# Challenges Solved
-
-### Payroll Automation
-
-Eliminated manual salary calculations by combining attendance, overtime, bonuses, deductions, and loans into a centralized payroll engine.
-
-### Project Cost Allocation
-
-Automatically allocated workforce costs to projects using actual attendance and overtime records.
-
-### Data Quality
-
-Implemented validation lists and controlled dropdowns to reduce data-entry errors and maintain consistency across departments.
-
-### Reporting Efficiency
-
-Replaced manual reporting processes with real-time executive dashboards powered by a single data model.
-
----
-
 # Business Impact
 
-- Automated payroll calculations
-- Automated labor cost allocation
-- Reduced manual reporting effort
-- Improved payroll accuracy
-- Centralized workforce and project data
-- Enabled real-time workforce analytics
-- Improved management visibility across projects and departments
+- Automated payroll calculations from attendance and overtime records.
+- Automated allocation of labor costs to projects and departments.
+- Eliminated manual payroll reconciliation and cost tracking.
+- Centralized workforce, payroll, and project data in one system.
+- Enabled real-time operational reporting through executive dashboards.
+- Improved management visibility across projects, departments, and workforce performance.
 
 ---
 
 ## Tech Stack
 
-**Microsoft Excel • Power Pivot • DAX • Power Query • Data Modeling • Pivot Tables • Interactive Dashboard Design**
+**Microsoft Excel • Power Pivot • DAX • Power Query • Data Modeling • Pivot Tables • Dashboard Design**
