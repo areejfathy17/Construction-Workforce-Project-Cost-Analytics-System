@@ -38,7 +38,7 @@ This matters because it removes the two biggest failure modes of spreadsheet-bas
 
 Five tables, related through a proper star-schema structure in Power Pivot — not a flat sheet with VLOOKUPs:
 
-`[Screenshot: Power Pivot Diagram View — https://github.com/areejfathy17/Construction-Workforce-Project-Cost-Analytics-System/blob/main/power-pivot-data-model.png]`
+![Power Pivot Data Model](power-pivot-data-model.png)
 
 | Table | Role | Key Relationship |
 |---|---|---|
