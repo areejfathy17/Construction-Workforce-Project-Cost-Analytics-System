@@ -38,7 +38,7 @@ This matters because it removes the two biggest failure modes of spreadsheet-bas
 
 Five tables, related through a proper star-schema structure in Power Pivot — not a flat sheet with VLOOKUPs:
 
-`[Screenshot: Power Pivot Diagram View — assets/screenshots/01_data_model.png]`
+`[https://github.com/areejfathy17/Construction-Workforce-Project-Cost-Analytics-System/blob/main/power-pivot-data-model.png]`
 
 | Table | Role | Key Relationship |
 |---|---|---|
@@ -180,21 +180,21 @@ Three dashboards, one model — each answering a different question for a differ
 
 **HR Analytics** — workforce composition: headcount, grade distribution, employment status, department and job-title breakdown, salary bands by role.
 
-`[Screenshot: assets/screenshots/02_hr_dashboard.png]`
+`[https://github.com/areejfathy17/Construction-Workforce-Project-Cost-Analytics-System/blob/main/HR_Dashboard.png]`
 
 **Payroll Analysis** — net salary, salary range, month-over-month trend (via `Previous Month Salary` / `Difference`), top earners, department-level salary distribution, disbursement channel split.
 
-`[Screenshot: assets/screenshots/03_payroll_analysis.png]`
+`[https://github.com/areejfathy17/Construction-Workforce-Project-Cost-Analytics-System/blob/main/Payroll%20Analysis%20Dashboard.png]`
 
 **Project Cost Analysis** — total project cost, workforce assigned, work days and OT hours, cost broken down by project and by department simultaneously — the direct output of the `Project Cost` and `Cost per Worker` measures.
 
-`[Screenshot: assets/screenshots/04_project_cost_dashboard.png]`
+`[https://github.com/areejfathy17/Construction-Workforce-Project-Cost-Analytics-System/blob/main/Project_Cost_Dashboard%20.png]`
 
 **Data entry & validation layer** — shown as supporting evidence of the controlled-entry architecture (Section 3), not as standalone reporting:
 
-`[Screenshot: Employee Master — assets/screenshots/05_master_employee.png]`
-`[Screenshot: Daily Work Log — assets/screenshots/06_daily_work.png]`
-`[Screenshot: Payroll Transactions — assets/screenshots/07_payroll_transactions.png]`
+`[https://github.com/areejfathy17/Construction-Workforce-Project-Cost-Analytics-System/blob/main/employee-master-data-entry.png]`
+`[https://github.com/areejfathy17/Construction-Workforce-Project-Cost-Analytics-System/blob/main/daily-work-tracking.png]`
+`[https://github.com/areejfathy17/Construction-Workforce-Project-Cost-Analytics-System/blob/main/payroll-transactions-entry.png]`
 
 ## 8. Technical Highlights
 
@@ -219,27 +219,5 @@ Three dashboards, one model — each answering a different question for a differ
 - Workforce risk (absence patterns, headcount shifts, cost per worker) is visible continuously rather than surfacing only at month-end.
 - The model is built to extend: adding a department, project, or transaction type requires a new row in a master table, not a rebuild of the reporting layer.
 
-## 11. Repository Structure
-
-```
-Construction-Workforce-Cost-Analytics/
-├── README.md
-├── assets/
-│   └── screenshots/
-│       ├── 01_data_model.png
-│       ├── 02_hr_dashboard.png
-│       ├── 03_payroll_analysis.png
-│       ├── 04_project_cost_dashboard.png
-│       ├── 05_master_employee.png
-│       ├── 06_daily_work.png
-│       └── 07_payroll_transactions.png
-├── docs/
-│   ├── data-dictionary.md      # field-level reference for all 5 tables
-│   ├── dax-measures.md         # full measure list, grouped, with descriptions
-│   └── business-logic.md       # cost allocation & payroll calculation rules
-└── HR_Labor_Cost_System.xlsx   # sanitized workbook
-```
-
-## 12. Notes on This Repository
 
 This project reflects a real operating system built for a live business context, sanitized for portfolio use — names, IDs, and figures in the screenshots are illustrative; the data model, relationships, and DAX logic reflect the actual system design.
