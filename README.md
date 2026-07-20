@@ -172,3 +172,8 @@ CALCULATE(
 - Centralized workforce, payroll, and project data in one system.
 - Enabled real-time operational reporting through executive dashboards.
 - Improved management visibility across projects, departments, and workforce performance.
+## Client Feedback
+
+⭐️⭐️⭐️⭐️⭐️
+
+![Client Review](Evaluation.png)
